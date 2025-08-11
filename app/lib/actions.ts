@@ -1,10 +1,11 @@
 'use server'
 
-import { type Invoice } from './definitions'
 import { z } from 'zod'
 import postgres from 'postgres'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+
+import { signIn, signOut } from './auth'
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' })
 
@@ -68,4 +69,12 @@ export async function updateInvoice(id: string, formData: FormData) {
 export async function deleteInvoice(id: string) {
   await sql`DELETE FROM invoices WHERE id = ${id}`
   revalidatePath('/dashboard/invoices')
+}
+
+export async function login() {
+  await signIn('github', {})
+}
+
+export async function logout() {
+  await signOut()
 }
